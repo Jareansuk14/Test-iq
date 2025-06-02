@@ -1,0 +1,50 @@
+{
+  "type": "flex",
+  "altText": "แชร์บอทให้เพื่อน",
+  "contents": {
+    "type": "bubble",
+    "hero": {
+      "type": "image",
+      "url": "https://yourdomain.com/banner.jpg",
+      "size": "full",
+      "aspectRatio": "20:13",
+      "aspectMode": "cover"
+    },
+    "body": {
+      "type": "box",
+      "layout": "vertical",
+      "contents": [
+        {
+          "type": "text",
+          "text": "แชร์บอทให้เพื่อน",
+          "weight": "bold",
+          "size": "xl"
+        },
+        {
+          "type": "text",
+          "text": "กดปุ่มด้านล่างเพื่อแชร์บอทนี้ผ่านไลน์",
+          "wrap": true,
+          "size": "sm",
+          "color": "#666666"
+        }
+      ]
+    },
+    "footer": {
+      "type": "box",
+      "layout": "vertical",
+      "spacing": "sm",
+      "contents": [
+        {
+          "type": "button",
+          "style": "primary",
+          "color": "#00B900",
+          "action": {
+            "type": "uri",
+            "label": "แชร์ให้เพื่อน",
+            "uri": "https://liff.line.me/YOUR_LIFF_ID"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,66 +1,38 @@
-const express = require('express');
-const { exec } = require('child_process');
-const path = require('path');
 require('dotenv').config();
+const express = require('express');
+const line = require('@line/bot-sdk');
+const fs = require('fs');
+const path = require('path');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+app.use(express.static('public'));
 
-// Test IQ Option API
-function testIQOption() {
-  const scriptPath = path.join(__dirname, 'test_iq.py');
-  const command = `python "${scriptPath}" BTCUSD 20:00`;
-  
-  console.log('🚀 Starting IQ Option test...');
-  console.log(`📞 Command: ${command}`);
-  
-  exec(command, { timeout: 60000 }, (error, stdout, stderr) => {
-    if (error) {
-      console.error('❌ Error:', error.message);
-      console.error('📝 Stderr:', stderr);
-      return;
+const config = {
+  channelAccessToken: process.env.CHANNEL_ACCESS_TOKEN,
+  channelSecret: 'YOUR_CHANNEL_SECRET',
+};
+
+const client = new line.Client(config);
+
+// webhook
+app.post('/webhook', line.middleware(config), (req, res) => {
+  Promise.all(req.body.events.map(handleEvent)).then(() => res.end());
+});
+
+async function handleEvent(event) {
+  if (event.type === 'message' && event.message.type === 'text') {
+    const text = event.message.text.toLowerCase();
+    if (text === 'แชร์') {
+      const flex = JSON.parse(
+        fs.readFileSync(path.join(__dirname, 'flex/shareCard.json'), 'utf8')
+      );
+      return client.replyMessage(event.replyToken, flex);
     }
-    
-    if (stderr) {
-      console.log('🔍 Debug:', stderr);
-    }
-    
-    if (stdout) {
-      try {
-        const result = JSON.parse(stdout.trim());
-        console.log('✅ Success!');
-        console.log('📊 Result:', JSON.stringify(result, null, 2));
-      } catch (e) {
-        console.log('📝 Raw output:', stdout);
-      }
-    }
-  });
+  }
 }
 
-// Routes
-app.get('/', (req, res) => {
-  res.json({
-    message: '🧪 IQ Option Test Server',
-    status: 'running',
-    time: new Date().toISOString()
-  });
-});
-
-app.get('/test', (req, res) => {
-  testIQOption();
-  res.json({
-    message: '🚀 Test started',
-    check: 'logs for results'
-  });
-});
-
-// Start server
-app.listen(PORT, () => {
-  console.log(`🌟 Test server running on port ${PORT}`);
-  
-  // Auto test เมื่อ server เริ่ม
-  setTimeout(() => {
-    console.log('🎯 Auto-testing in 3 seconds...');
-    testIQOption();
-  }, 3000);
+// start server
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
+  console.log(`Server running on http://localhost:${port}`);
 });

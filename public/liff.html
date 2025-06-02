@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>แชร์บอท</title>
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+</head>
+<body>
+  <h2>แชร์บอทให้เพื่อนของคุณ</h2>
+  <button id="shareBtn">แชร์บอท</button>
+
+  <script>
+    async function main() {
+      await liff.init({ liffId: "YOUR_LIFF_ID" });
+
+      if (!liff.isLoggedIn()) {
+        liff.login();
+        return;
+      }
+
+      document.getElementById("shareBtn").onclick = async () => {
+        try {
+          await liff.shareTargetPicker([
+            {
+              type: "flex",
+              altText: "มาร่วมใช้งานบอทกันเถอะ!",
+              contents: {
+                type: "bubble",
+                body: {
+                  type: "box",
+                  layout: "vertical",
+                  contents: [
+                    {
+                      type: "text",
+                      text: "บอทดีๆ ต้องแชร์!",
+                      weight: "bold",
+                      size: "xl"
+                    },
+                    {
+                      type: "text",
+                      text: "กดปุ่มด้านล่างเพื่อแอดไลน์บอทนี้",
+                      margin: "md",
+                      size: "md"
+                    }
+                  ]
+                },
+                footer: {
+                  type: "box",
+                  layout: "vertical",
+                  contents: [
+                    {
+                      type: "button",
+                      style: "primary",
+                      action: {
+                        type: "uri",
+                        label: "แอดบอท",
+                        uri: "https://line.me/R/ti/p/@your_bot_id"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          ]);
+          alert("แชร์สำเร็จ!");
+        } catch (err) {
+          console.error(err);
+          alert("แชร์ไม่สำเร็จ");
+        }
+      };
+    }
+
+    main();
+  </script>
+</body>
+</html>
