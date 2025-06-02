@@ -5,14 +5,15 @@ const path = require('path');
 
 const app = express();
 
-// ตั้งค่า config จากตัวแปรแวดล้อม (Render Dashboard ต้องตั้งด้วย)
 const config = {
   channelAccessToken: process.env.CHANNEL_ACCESS_TOKEN,
   channelSecret: process.env.CHANNEL_SECRET,
 };
 
-// LINE SDK client
 const client = new line.Client(config);
+
+// ✅ เสิร์ฟ static files เช่น liff.html
+app.use(express.static(path.join(__dirname, 'public')));
 
 // อย่าใส่ express.json() ก่อน middleware ของ LINE
 app.post('/webhook', line.middleware(config), (req, res) => {
@@ -24,17 +25,17 @@ app.post('/webhook', line.middleware(config), (req, res) => {
     });
 });
 
-// ใช้ express.json() ได้ที่ route อื่นๆ ถ้ามี
+// json parser สำหรับ route อื่นๆ
 app.use(express.json());
 
-// ตัวจัดการ event
+// จัดการข้อความจากผู้ใช้
 async function handleEvent(event) {
   try {
     if (event.type === 'message' && event.message.type === 'text') {
       const text = event.message.text.toLowerCase();
 
       if (text === 'แชร์') {
-        const flex = require('./flex/shareCard.json'); // โหลด Flex Message
+        const flex = require('./flex/shareCard.json');
         return client.replyMessage(event.replyToken, flex);
       }
     }
@@ -45,7 +46,7 @@ async function handleEvent(event) {
   }
 }
 
-// เริ่มรันเซิร์ฟเวอร์
+// ✅ เริ่มเซิร์ฟเวอร์
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`✅ Server running on http://localhost:${port}`);
